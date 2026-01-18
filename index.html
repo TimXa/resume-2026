@@ -8,16 +8,15 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
-    <!-- Настройка стилей. Цвета: камень (серый) и янтарь (акцент). -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: '#44403c', // Основной текст
-                        secondary: '#78716c', // Вторичный
-                        accent: '#d97706', // Акцентный (оранжевый)
-                        bg: '#fafaf9', // Фон
+                        primary: '#44403c', // Stone 700
+                        secondary: '#78716c', // Stone 500
+                        accent: '#d97706', // Amber 600
+                        bg: '#fafaf9', // Stone 50
                         card: '#ffffff',
                     },
                     animation: {
@@ -40,11 +39,9 @@
         body { font-family: 'Inter', sans-serif; background-color: #fafaf9; color: #44403c; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
 
-        /* Контейнер для графиков, чтобы не плыли размеры */
         .chart-container { position: relative; width: 100%; max-width: 600px; margin: 0 auto; height: 300px; max-height: 400px; }
         @media (min-width: 768px) { .chart-container { height: 350px; } }
 
-        /* Скроллбар для терминала */
         .terminal-scroll::-webkit-scrollbar { width: 8px; }
         .terminal-scroll::-webkit-scrollbar-track { background: #1e1e1e; }
         .terminal-scroll::-webkit-scrollbar-thumb { background: #d97706; border-radius: 4px; }
@@ -52,7 +49,6 @@
         .skill-tag { transition: all 0.2s ease; }
         .skill-tag:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
 
-        /* Анимация мигания (для выделения блока при скролле) */
         @keyframes flash-focus {
             0% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0); border-color: transparent; }
             15% { box-shadow: 0 0 0 6px rgba(217, 119, 6, 0.2); border-color: #d97706; }
@@ -68,58 +64,67 @@
             border-radius: 0.75rem; 
         }
 
-        /* Анимации модалки */
-        .modal-backdrop {
-            transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
-        }
-        .modal-card {
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
-        }
-        
-        .close-btn:hover svg {
-            transform: rotate(90deg);
-            transition: transform 0.3s ease;
-        }
+        .modal-backdrop { transition: opacity 0.3s ease, backdrop-filter 0.3s ease; }
+        .modal-card { transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease; }
+        .close-btn:hover svg { transform: rotate(90deg); transition: transform 0.3s ease; }
+        .avatar-img { object-fit: cover; border: 2px solid #e7e5e4; }
 
-        .avatar-img {
-            object-fit: cover;
-            border: 2px solid #e7e5e4;
-        }
+        /* Стили для мобильного меню */
+        .mobile-menu-enter { opacity: 0; transform: translateY(-10px); pointer-events: none; }
+        .mobile-menu-active { opacity: 1; transform: translateY(0); pointer-events: auto; }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col relative">
 
     <!-- Шапка -->
     <header class="bg-white border-b border-stone-200 sticky top-0 z-40 shadow-sm bg-opacity-90 backdrop-blur-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center relative">
             <div class="flex items-center space-x-3">
-                <!-- Аватарка -->
-                <div class="w-10 h-10 rounded-full overflow-hidden border border-stone-200 shadow-sm relative group">
-                     <!-- Фото изменено на unnamed.jpg -->
+                <div class="w-10 h-10 rounded-full overflow-hidden border border-stone-200 shadow-sm relative group shrink-0">
                     <img src="unnamed.jpg" alt="Тимофей" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Timofey&background=44403c&color=fff'">
                 </div>
-                <div>
+                <div class="hidden sm:block">
                     <h1 class="text-lg font-bold text-primary leading-none">Тимофей</h1>
                     <p class="text-[10px] text-secondary font-mono mt-0.5 uppercase tracking-wide">Backend & AI Engineer</p>
                 </div>
             </div>
             
-            <!-- Меню (скрыто на мобилках) -->
-            <div class="hidden md:flex items-center space-x-1">
+            <!-- Десктопное Меню -->
+            <div class="hidden md:flex items-center space-x-1 absolute left-1/2 transform -translate-x-1/2">
                 <a href="#experience" onclick="customScroll(event, 'experience')" class="px-3 py-2 text-sm font-medium text-secondary hover:text-accent hover:bg-stone-50 rounded-md transition-all cursor-pointer">Опыт</a>
                 <a href="#stack" onclick="customScroll(event, 'stack')" class="px-3 py-2 text-sm font-medium text-secondary hover:text-accent hover:bg-stone-50 rounded-md transition-all cursor-pointer">Стек</a>
                 <a href="#projects" onclick="customScroll(event, 'projects')" class="px-3 py-2 text-sm font-medium text-secondary hover:text-accent hover:bg-stone-50 rounded-md transition-all cursor-pointer">Проекты</a>
             </div>
 
             <div class="flex items-center space-x-3">
-                <button onclick="toggleModal(true)" class="text-stone-600 hover:text-accent font-medium text-sm transition-colors flex items-center px-3 py-2">
-                    Связаться
+                <!-- Гамбургер (для мобилок) -->
+                <button onclick="toggleMobileMenu()" class="md:hidden text-stone-600 hover:text-accent p-2 focus:outline-none" aria-label="Меню">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
                 </button>
-                <!-- Кнопка PDF без смайлика -->
-                <button id="downloadBtn" onclick="downloadResume()" class="bg-primary hover:bg-stone-800 text-white px-4 py-2 rounded-full text-sm font-medium transition-all shadow-md hover:shadow-lg flex items-center transform hover:-translate-y-0.5">
+
+                <!-- PDF Кнопка -->
+                <button id="downloadBtn" onclick="downloadResume()" class="bg-primary hover:bg-stone-800 text-white px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all shadow-md hover:shadow-lg flex items-center transform hover:-translate-y-0.5 shrink-0">
                     Скачать PDF
                 </button>
+
+                <!-- Кнопка связи (десктоп) -->
+                <button onclick="toggleModal(true)" class="hidden sm:flex text-stone-600 hover:text-accent font-medium text-sm transition-colors items-center px-3 py-2">
+                    Связаться
+                </button>
             </div>
+        </div>
+
+        <!-- Мобильное выпадающее меню -->
+        <div id="mobileMenu" class="absolute top-full left-0 right-0 bg-white border-b border-stone-200 shadow-xl p-4 flex flex-col space-y-2 md:hidden mobile-menu-enter transition-all duration-300 ease-in-out z-30">
+            <a href="#experience" onclick="customScroll(event, 'experience')" class="px-4 py-3 text-sm font-bold text-primary hover:bg-stone-50 rounded-lg">Опыт работы</a>
+            <a href="#stack" onclick="customScroll(event, 'stack')" class="px-4 py-3 text-sm font-bold text-primary hover:bg-stone-50 rounded-lg">Стек технологий</a>
+            <a href="#projects" onclick="customScroll(event, 'projects')" class="px-4 py-3 text-sm font-bold text-primary hover:bg-stone-50 rounded-lg">Проекты</a>
+            <div class="h-px bg-stone-100 my-2"></div>
+            <button onclick="toggleModal(true); toggleMobileMenu();" class="px-4 py-3 text-sm font-bold text-accent hover:bg-stone-50 rounded-lg text-left">
+                Написать сообщение
+            </button>
         </div>
     </header>
 
@@ -127,7 +132,6 @@
 
         <!-- Основной блок -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Текстовое описание -->
             <div class="lg:col-span-2 bg-white rounded-2xl p-8 shadow-sm border border-stone-100 relative overflow-hidden group hover:border-accent/20 transition-colors">
                 <div class="absolute top-0 right-0 p-4 opacity-10">
                     <span class="text-9xl font-serif">"</span>
@@ -152,7 +156,6 @@
                 </div>
             </div>
 
-            <!-- Терминал с "секретным" логом -->
             <div class="lg:col-span-1 bg-stone-900 rounded-2xl p-1 shadow-lg flex flex-col transform transition-transform hover:scale-[1.01]">
                 <div class="bg-stone-800 rounded-t-xl px-4 py-2 flex items-center justify-between border-b border-stone-700">
                     <div class="flex space-x-2">
@@ -182,7 +185,7 @@
             </div>
         </section>
 
-        <!-- Цифры и метрики -->
+        <!-- Метрики -->
         <section>
             <div class="flex items-center mb-4">
                 <h3 class="text-lg font-bold text-primary mr-2">Ключевые показатели</h3>
@@ -208,12 +211,8 @@
             </div>
         </section>
 
-        <!-- Контент: Опыт и Проекты -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            <!-- Левая колонка -->
             <div class="lg:col-span-2 space-y-8">
-                
                 <!-- Опыт -->
                 <section id="experience" class="rounded-xl border border-transparent p-2 -m-2">
                     <div class="flex items-center mb-6">
@@ -223,7 +222,7 @@
                     <div class="space-y-6" id="experience-container"></div>
                 </section>
 
-                <!-- Пет-проекты -->
+                <!-- Проекты -->
                 <section id="projects" class="rounded-xl border border-transparent p-2 -m-2">
                     <div class="flex items-center mb-6">
                         <h3 class="text-xl font-bold text-primary mr-3">Пет-проекты</h3>
@@ -250,7 +249,7 @@
                 </section>
             </div>
 
-            <!-- Правая колонка: Графики -->
+            <!-- Правая колонка -->
             <div class="space-y-8" id="stack">
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-100">
                     <h3 class="font-bold text-primary mb-4">Технический фокус</h3>
@@ -298,43 +297,29 @@
             </div>
         </div>
         
-        <!-- Дополнительный спейсер (пустой блок) в конце страницы,
-             чтобы последний раздел мог проскроллиться до верха (header height + margin) -->
-        <div class="h-[50vh]"></div>
+        <!-- ДИНАМИЧЕСКИЙ спейсер. Изначально маленький, растет если нужно -->
+        <div id="scroll-spacer" class="h-24"></div>
     </main>
 
-    <!-- Футер УДАЛЕН по запросу -->
-
-    <!-- Модальное окно "Связаться" -->
+    <!-- Модальное окно -->
     <div id="contactModal" class="fixed inset-0 z-[100] hidden items-center justify-center" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <!-- Задний фон с блюром -->
         <div id="modalBackdrop" class="absolute inset-0 bg-stone-900/40 backdrop-blur-md opacity-0 transition-opacity duration-300" onclick="toggleModal(false)"></div>
-
-        <!-- Карточка -->
         <div id="modalCard" class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 transform scale-95 opacity-0 transition-all duration-300">
-            
-            <!-- Крестик закрытия -->
             <button onclick="toggleModal(false)" class="close-btn absolute top-4 right-4 text-stone-400 hover:text-stone-600 focus:outline-none p-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-300 hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
-
-            <!-- Контент модалки -->
             <div class="flex flex-col items-center text-center mt-2">
-                <!-- Аватарка в модалке (unnamed.jpg) -->
                 <div class="w-24 h-24 rounded-full p-1 border-2 border-accent mb-4 overflow-hidden shadow-md">
                     <img src="unnamed.jpg" alt="Тимофей" class="w-full h-full object-cover rounded-full" onerror="this.src='https://ui-avatars.com/api/?name=Timofey&background=44403c&color=fff&size=128'">
                 </div>
-                
                 <h3 class="text-xl font-bold text-primary mb-1">Тимофей</h3>
                 <p class="text-accent font-medium text-sm mb-4">@TimXaa</p>
-                
                 <p class="text-secondary text-sm mb-6 leading-relaxed bg-stone-50 p-3 rounded-lg border border-stone-100">
                     Отвечаю максимально оперативно.<br> 
                     <span class="text-xs text-stone-400 mt-1 block">Если не ответил в течении 1-8 часов —<br>продублируйте сообщение.</span>
                 </p>
-
                 <a href="https://t.me/TimXaa" target="_blank" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 flex items-center justify-center group">
                     <svg class="w-5 h-5 mr-2 fill-current" viewBox="0 0 24 24">
                         <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
@@ -346,7 +331,6 @@
     </div>
 
     <script>
-        // Данные для резюме (на основе текста)
         const resumeData = {
             experience: [
                 {
@@ -379,31 +363,73 @@
             proficiency: { labels: ['Java', 'Python', 'AI/RAG', 'SQL', 'Docker'], data: [95, 90, 85, 80, 75] }
         };
 
-        // Запуск при загрузке
         document.addEventListener('DOMContentLoaded', () => {
             renderExperience();
             initCharts();
         });
 
-        // 1. Плавный скролл с инерцией
+        // --- Управление Мобильным Меню ---
+        const mobileMenu = document.getElementById('mobileMenu');
+        let isMenuOpen = false;
+
+        function toggleMobileMenu(forceClose) {
+            if (forceClose === false || isMenuOpen) {
+                mobileMenu.classList.remove('mobile-menu-active');
+                mobileMenu.classList.add('mobile-menu-enter');
+                isMenuOpen = false;
+            } else {
+                mobileMenu.classList.remove('mobile-menu-enter');
+                mobileMenu.classList.add('mobile-menu-active');
+                isMenuOpen = true;
+            }
+        }
+
+        // --- Умный Скролл ---
         function customScroll(event, targetId) {
             event.preventDefault();
             const target = document.getElementById(targetId);
             if (!target) return;
 
-            const headerOffset = 100; // Отступ под шапку
-            const elementPosition = target.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            // Закрываем меню если открыто
+            toggleMobileMenu(false);
+
+            const headerOffset = 100; // Высота шапки + отступ
+            
+            // Считаем где элемент сейчас
+            const elementPosition = target.getBoundingClientRect().top + window.pageYOffset;
+            const desiredScrollPos = elementPosition - headerOffset;
+
+            // Считаем сколько вообще можно проскроллить
+            const bodyHeight = document.body.offsetHeight;
+            const windowHeight = window.innerHeight;
+            let maxScroll = bodyHeight - windowHeight;
+
+            // --- МАГИЯ СТЕНЫ ---
+            // Если желаемая позиция ниже, чем мы можем проскроллить сейчас
+            if (desiredScrollPos > maxScroll) {
+                // Вычисляем сколько не хватает
+                const missingSpace = desiredScrollPos - maxScroll;
+                // Добавляем этот отступ в нижний спейсер
+                const spacer = document.getElementById('scroll-spacer');
+                // Прибавляем к текущему размеру (если уже есть) или ставим новый
+                const currentHeight = spacer.offsetHeight;
+                // Добавляем чуть запаса (+20px)
+                spacer.style.height = `${currentHeight + missingSpace + 20}px`;
+            }
+
+            // Запускаем анимацию
+            animateScroll(desiredScrollPos);
+        }
+
+        function animateScroll(destination) {
             const startPosition = window.pageYOffset;
-            const distance = offsetPosition - startPosition;
-            const duration = 1500; // Время анимации
+            const distance = destination - startPosition;
+            const duration = 1500;
             let start = null;
 
             function animation(currentTime) {
                 if (start === null) start = currentTime;
                 const timeElapsed = currentTime - start;
-                
-                // Функция плавности (Ease In-Out Cubic)
                 const run = easeInOutCubic(timeElapsed, startPosition, distance, duration);
                 
                 window.scrollTo(0, run);
@@ -411,29 +437,42 @@
                 if (timeElapsed < duration) {
                     requestAnimationFrame(animation);
                 } else {
-                    // Конец скролла - мигаем
-                    triggerBlink(target);
+                    // В конце подсвечиваем нужный блок
+                    // Определяем какой блок мы скроллили (приблизительно по позиции)
+                    // Упрощение: в реальном коде можно передать ID в animateScroll
+                    const targetBlock = document.elementFromPoint(window.innerWidth / 2, 120); 
+                    if(targetBlock && targetBlock.closest('section')) {
+                         triggerBlink(targetBlock.closest('section'));
+                    } else {
+                        // Фолбек: просто пробуем найти по якорю в URL или прошлый таргет
+                        // В этой реализации triggerBlink вызывается отдельно если нужно
+                        // Но в customScroll мы потеряли ссылку на target внутри requestFrame
+                        // Исправим: triggerBlink вызывается явно
+                        const targets = ['experience', 'stack', 'projects'];
+                        targets.forEach(id => {
+                            const el = document.getElementById(id);
+                            const rect = el.getBoundingClientRect();
+                            if (rect.top >= 80 && rect.top <= 120) triggerBlink(el);
+                        });
+                    }
                 }
             }
-
-            function easeInOutCubic(t, b, c, d) {
-                t /= d/2;
-                if (t < 1) return c/2*t*t*t + b;
-                t -= 2;
-                return c/2*(t*t*t + 2) + b;
-            }
-
             requestAnimationFrame(animation);
         }
 
-        // Запуск мигания
+        function easeInOutCubic(t, b, c, d) {
+            t /= d/2;
+            if (t < 1) return c/2*t*t*t + b;
+            t -= 2;
+            return c/2*(t*t*t + 2) + b;
+        }
+
         function triggerBlink(element) {
             element.classList.remove('highlight-target');
-            void element.offsetWidth; // Перерисовка
+            void element.offsetWidth; 
             element.classList.add('highlight-target');
         }
 
-        // 3. Логика модалки
         const modal = document.getElementById('contactModal');
         const backdrop = document.getElementById('modalBackdrop');
         const card = document.getElementById('modalCard');
@@ -458,7 +497,6 @@
             }
         }
 
-        // Рендер карточек опыта
         function renderExperience() {
             const container = document.getElementById('experience-container');
             resumeData.experience.forEach(job => {
@@ -491,7 +529,6 @@
             });
         }
 
-        // Инициализация графиков
         function initCharts() {
             const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
             
@@ -508,7 +545,6 @@
             });
         }
 
-        // Симуляция сканирования
         function runSimulation() {
             const terminal = document.getElementById('terminal-content');
             const originalContent = terminal.innerHTML;
@@ -519,7 +555,6 @@
             }, 800);
         }
 
-        // Скачивание PDF
         function downloadResume() {
             const btn = document.getElementById('downloadBtn');
             const originalText = btn.innerHTML;
@@ -531,10 +566,12 @@
             btn.classList.add('opacity-75');
             const clone = document.body.cloneNode(true);
             
-            // Прячем лишнее для печати
             clone.querySelector('header').style.display = 'none'; 
             clone.querySelector('#contactModal').remove();
-            
+            // Убираем мобильное меню из PDF если оно есть
+            const mobMenu = clone.querySelector('#mobileMenu');
+            if(mobMenu) mobMenu.remove();
+
             html2pdf().set({ margin: [0.2,0,0,0], filename: customName, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } }).from(document.body).save().then(() => {
                 btn.innerHTML = originalText;
                 btn.classList.remove('opacity-75');

@@ -95,8 +95,8 @@
             <div class="flex items-center space-x-3">
                 <!-- Аватарка -->
                 <div class="w-10 h-10 rounded-full overflow-hidden border border-stone-200 shadow-sm relative group">
-                     <!-- Фото из файлов, если нет - заглушка -->
-                    <img src="1000069121.jpg" alt="Тимофей" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Timofey&background=44403c&color=fff'">
+                     <!-- Фото изменено на unnamed.jpg -->
+                    <img src="unnamed.jpg" alt="Тимофей" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Timofey&background=44403c&color=fff'">
                 </div>
                 <div>
                     <h1 class="text-lg font-bold text-primary leading-none">Тимофей</h1>
@@ -297,14 +297,13 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Дополнительный спейсер (пустой блок) в конце страницы,
+             чтобы последний раздел мог проскроллиться до верха (header height + margin) -->
+        <div class="h-[50vh]"></div>
     </main>
 
-    <!-- Футер -->
-    <footer class="bg-white border-t border-stone-200 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 py-8 text-center">
-            <p class="text-stone-400 text-xs">© 2026 Тимофей. AI-Generated Interactive Resume.</p>
-        </div>
-    </footer>
+    <!-- Футер УДАЛЕН по запросу -->
 
     <!-- Модальное окно "Связаться" -->
     <div id="contactModal" class="fixed inset-0 z-[100] hidden items-center justify-center" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -323,9 +322,9 @@
 
             <!-- Контент модалки -->
             <div class="flex flex-col items-center text-center mt-2">
-                <!-- Аватарка в модалке -->
+                <!-- Аватарка в модалке (unnamed.jpg) -->
                 <div class="w-24 h-24 rounded-full p-1 border-2 border-accent mb-4 overflow-hidden shadow-md">
-                    <img src="1000069121.jpg" alt="Тимофей" class="w-full h-full object-cover rounded-full" onerror="this.src='https://ui-avatars.com/api/?name=Timofey&background=44403c&color=fff&size=128'">
+                    <img src="unnamed.jpg" alt="Тимофей" class="w-full h-full object-cover rounded-full" onerror="this.src='https://ui-avatars.com/api/?name=Timofey&background=44403c&color=fff&size=128'">
                 </div>
                 
                 <h3 class="text-xl font-bold text-primary mb-1">Тимофей</h3>
